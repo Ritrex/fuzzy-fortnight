@@ -1,9 +1,19 @@
 package com.rart.license_demo.license_handler.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Agreement {
+
+    @JsonProperty("agreement_id")
     private Integer agreementID;
+
+    @JsonProperty("name")
     private String name;
+
+    @JsonProperty("signed_by")
     private String signedBy;
+
+    @JsonProperty("product_id")
     private Integer productID;
 
     public Agreement(Integer agreementID, String name, String signedBy, Integer productID) {

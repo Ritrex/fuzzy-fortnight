@@ -1,9 +1,19 @@
 package com.rart.license_demo.license_handler.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Product {
+
+    @JsonProperty("productid")
     Integer productID;
+
+    @JsonProperty("name")
     String name;
+
+    @JsonProperty("price")
     Double Price;
+
+    @JsonProperty("parentid")
     Integer parentProductID;
 
 

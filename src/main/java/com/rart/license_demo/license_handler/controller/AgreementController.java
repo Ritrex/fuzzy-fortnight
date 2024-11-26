@@ -1,5 +1,6 @@
 package com.rart.license_demo.license_handler.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rart.license_demo.license_handler.model.Agreement;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.awt.geom.AffineTransform;
 import java.io.*;
 
 import java.util.HashMap;
@@ -17,6 +19,11 @@ import java.util.Map;
 @Controller
 @RequestMapping("Agreement/")
 public class AgreementController {
+    private final ObjectMapper om;
+
+    public AgreementController (ObjectMapper om){
+        this.om=om;
+    }
 
     @RequestMapping("Agreement/api/{id}")
     public ResponseEntity<String> getAgreement(Integer i){
@@ -41,11 +48,14 @@ public class AgreementController {
     @PostMapping("save")
     public ResponseEntity<String> saveAgreement(@RequestBody Agreement a){
         System.out.println(a.toJSON());
-        File f=new File(System.getProperty("user.dir"),"Agreement"+a.getAgreementID()+".txt");
+            File f=new File(System.getProperty("user.dir"),"Agreement"+a.getAgreementID()+".txt");
         ResponseEntity<String> re = new ResponseEntity<>("Error en el servidor",HttpStatusCode.valueOf(500));
-        try(BufferedWriter bf = new BufferedWriter(new FileWriter(f));){
+        try(BufferedWriter bf = new BufferedWriter(new FileWriter(f));
 
-            bf.write(a.toJSON());
+        ){
+            om.writeValue(f,a);
+            //bf.write(a.toJSON());
+
             re= new ResponseEntity<>(f.getAbsolutePath(),HttpStatusCode.valueOf(201));
 
         }catch(IOException ioe){
@@ -70,6 +80,12 @@ public class AgreementController {
             for (String currentLine= br.readLine(); currentLine!=null; currentLine=br.readLine()) {
                 JSONContent=JSONContent+currentLine;
             }
+            System.out.println("JSON: "+JSONContent);
+            Agreement a=  om.readValue(f,Agreement.class);
+            System.out.println("JSON: "+a);
+            /*
+
+            System.out.println(a.toString());
             JSONContent=JSONContent.substring(1,JSONContent.length()-1);
             String[] values = JSONContent.split(",");
             for(String pair:values){
@@ -78,12 +94,18 @@ public class AgreementController {
                 for (String el : kv)
                     System.out.printf("\n%s_%s",kv);
             }
+
+             */
         }
         catch (FileNotFoundException fnfe){
-            return new ResponseEntity<String>("Archivo no encontrado",HttpStatusCode.valueOf(500));
+            return new ResponseEntity<String>("Archivo no encontrado",HttpStatusCode.valueOf(404));
+        }
+        catch(IOException ioe){
+            ioe.printStackTrace();
+            return new ResponseEntity<String>("Unable to parse File",HttpStatusCode.valueOf(500));
         }
         catch(Exception e){
-            return new ResponseEntity<String>("Problema de lectura de archivo",HttpStatusCode.valueOf(500));
+            return new ResponseEntity<String>("Invalid file",HttpStatusCode.valueOf(500));
         }
 
         return new ResponseEntity<String>("Error de servidor",HttpStatusCode.valueOf(500));
