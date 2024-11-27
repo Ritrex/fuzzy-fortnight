@@ -1,7 +1,11 @@
 package com.rart.license_demo.license_handler.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rart.license_demo.license_handler.DAO.ProductDAO;
+import com.rart.license_demo.license_handler.factory.ConnectionFactory;
 import com.rart.license_demo.license_handler.model.Agreement;
+import com.rart.license_demo.license_handler.model.AgreementWithProducts;
+import com.rart.license_demo.license_handler.model.Product;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.awt.geom.AffineTransform;
 import java.io.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,12 +71,13 @@ public class AgreementController {
     }
 
     @PostMapping("getp")
-    public ResponseEntity<String> getAssociatedProducts(@RequestBody String s){
+    public ResponseEntity<AgreementWithProducts> getAssociatedProducts(@RequestBody String s){
         System.out.println(s+s.substring(s.lastIndexOf("\\")+1)+s.substring(1,s.length()-2));
 
         int last_slash=s.lastIndexOf("\\");
         File f= new File(s);
         System.out.printf(f.exists()+" "+f.canRead());
+        AgreementWithProducts awp= null;
 
         try(
             FileReader fr = new FileReader(s);
@@ -83,6 +89,14 @@ public class AgreementController {
             System.out.println("JSON: "+JSONContent);
             Agreement a=  om.readValue(f,Agreement.class);
             System.out.println("JSON: "+a);
+            ProductDAO pdao= new ProductDAO(ConnectionFactory.getConnection());
+            ArrayList<Product> associatedProducts = (ArrayList<Product>) pdao.listAssociatedProducts(a);
+            for(Product product : associatedProducts){
+                System.out.println(product);
+            }
+
+            return new ResponseEntity<AgreementWithProducts>(awp,HttpStatusCode.valueOf(200));
+
             /*
 
             System.out.println(a.toString());
@@ -98,17 +112,16 @@ public class AgreementController {
              */
         }
         catch (FileNotFoundException fnfe){
-            return new ResponseEntity<String>("Archivo no encontrado",HttpStatusCode.valueOf(404));
+            return new ResponseEntity<AgreementWithProducts>(awp,HttpStatusCode.valueOf(404));
         }
         catch(IOException ioe){
             ioe.printStackTrace();
-            return new ResponseEntity<String>("Unable to parse File",HttpStatusCode.valueOf(500));
+            return new ResponseEntity<AgreementWithProducts>(awp,HttpStatusCode.valueOf(415));
         }
         catch(Exception e){
-            return new ResponseEntity<String>("Invalid file",HttpStatusCode.valueOf(500));
+            return new ResponseEntity<AgreementWithProducts>(awp,HttpStatusCode.valueOf(500));
         }
 
-        return new ResponseEntity<String>("Error de servidor",HttpStatusCode.valueOf(500));
     }
     /*
     public void listProducts()  {
