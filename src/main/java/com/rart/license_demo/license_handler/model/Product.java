@@ -2,22 +2,36 @@ package com.rart.license_demo.license_handler.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Date;
+
 public class Product {
 
     @JsonProperty("productid")
-    Integer productID;
+    private Integer productID;
 
     @JsonProperty("name")
-    String name;
+    private String name;
 
     @JsonProperty("price")
-    Double Price;
+    private Double Price;
 
     @JsonProperty("parentid")
-    Integer parentProductID;
+    private Integer parentProductID;
 
+    private Date startDate;
 
-    public Product(String name, Double price, Integer parentProductID) {
+    private Date endDate;
+
+    public Product(Integer productID, String name, Double price, Integer parentProductID, Date endDate, Date startDate) {
+        this.productID = productID;
+        this.name = name;
+        Price = price;
+        this.parentProductID = parentProductID;
+        this.endDate = endDate;
+        this.startDate = startDate;
+    }
+
+    public Product(String name, Double price, Integer parentProductID, Date startDate, Date endDate ){
         this.name = name;
         Price = price;
         this.parentProductID = parentProductID;
@@ -27,6 +41,30 @@ public class Product {
         this.productID = productID;
         this.name = name;
         Price = price;
+        this.parentProductID = parentProductID;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public Integer getParentProductID() {
+        return parentProductID;
+    }
+
+    public void setParentProductID(Integer parentProductID) {
         this.parentProductID = parentProductID;
     }
 
@@ -49,11 +87,13 @@ public class Product {
     @Override
     public String toString() {
         return "Product{" +
-                "productID=" + productID +
-                ", name='" + name + '\'' +
-                ", Price=" + Price +
-                ", parentProductID=" + parentProductID +
-                '}';
+               "productID=" + productID +
+               ", name='" + name + '\'' +
+               ", Price=" + Price +
+               ", parentProductID=" + parentProductID +
+               ", startDate=" + startDate +
+               ", endDate=" + endDate +
+               '}';
     }
 
     public String toJSON() {

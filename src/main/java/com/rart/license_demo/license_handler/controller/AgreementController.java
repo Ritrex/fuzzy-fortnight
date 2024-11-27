@@ -94,7 +94,7 @@ public class AgreementController {
             for(Product product : associatedProducts){
                 System.out.println(product);
             }
-
+            awp=new AgreementWithProducts(a,associatedProducts);
             return new ResponseEntity<AgreementWithProducts>(awp,HttpStatusCode.valueOf(200));
 
             /*

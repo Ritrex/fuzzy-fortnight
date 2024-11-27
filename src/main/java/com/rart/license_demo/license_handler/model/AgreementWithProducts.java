@@ -77,4 +77,15 @@ public class AgreementWithProducts {
     public void setSignedBy(String signedBy) {
         this.signedBy = signedBy;
     }
+
+    @Override
+    public String toString() {
+        return "AgreementWithProducts{" +
+               "agreementID=" + agreementID +
+               ", name='" + name + '\'' +
+               ", signedBy='" + signedBy + '\'' +
+               ", productID=" + productID +
+               ", products=" + products +
+               '}';
+    }
 }

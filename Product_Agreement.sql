@@ -50,7 +50,8 @@ where name in ('excel','powerpoint','word'));
 */
 insert into Agreements(signed_by,product) values ('me',(SELECT name FROM Product WHERE name = 'office'));
 select * from Agreements;
-
+select * from Product where 1 = (parent_productid);
+Select * from Product where 1 = Product.parent_productid
 /*
 create table Product;
 */

@@ -24,22 +24,25 @@ public class ProductDAO {
     public List<Product> listAssociatedProducts(Agreement a){
         ArrayList<Product> resultList= new ArrayList<>();
         System.out.println(a);
-        try{
-            PreparedStatement listingQuery= con.prepareStatement("Select * from Product where ? = Product.parent_productid",a.getProductID());
-            boolean resultSignal=listingQuery.execute();
-            System.out.println(resultSignal);
-            if(resultSignal) {
-                ResultSet rs= listingQuery.getResultSet();
-                while(rs.next()){
-                    resultList.add(new Product(rs.getInt("productid"),
+        try(
+
+            PreparedStatement listingQuery= con.prepareStatement("Select * from Product where parent_productid = ?");
+
+            ){
+            listingQuery.setInt(1,a.getProductID());
+            ResultSet rs=listingQuery.executeQuery();
+
+            while(rs.next()){
+                resultList.add(new Product(rs.getInt("productid"),
                             rs.getString("name"),
                             rs.getDouble("price"),
                             rs.getInt("parent_productid")));
-                }
             }
+
         }
         catch(SQLException sqle){
-
+            System.out.println("SQL Exception while listing");
+            sqle.printStackTrace();
         }
         for(Product p : resultList){
             System.out.println(p);
